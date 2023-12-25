@@ -6,8 +6,7 @@ class User(AbstractUser):
     favorite_profiles = models.ManyToManyField('Profile', related_name='favorited_by', blank=True)
 
     def save(self, *args, **kwargs):
-        # Set the username to the email if it is not provided
-        if not self.username:
+        if self.email and (not self.username or self.username != self.email):
             self.username = self.email
         super().save(*args, **kwargs)
 

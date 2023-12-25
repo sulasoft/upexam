@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import User, Profile
 from .serializers import UserSerializer, ProfileSerializer
+from django.db import IntegrityError
 
 class UserListCreateAPIView(APIView):
     """
@@ -28,38 +29,49 @@ class UserProfileAPIView(APIView):
     API endpoint that allows a single user to be viewed, updated, or deleted.
     """
 
-    def get(self, request, pk, format=None):
-        # Get user by primary key
+    def get_user(self, pk):
         try:
-            user = User.objects.get(pk=pk)
+            return User.objects.get(pk=pk)
         except User.DoesNotExist:
-            return Response({"detail": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+            raise Http404("User not found")
 
+    def get(self, request, pk, format=None):
+        user = self.get_user(pk)
         serializer = UserSerializer(user)
         return Response(serializer.data)
 
     def put(self, request, pk, format=None):
-        # Update user by primary key
-        try:
-            user = User.objects.get(pk=pk)
-        except User.DoesNotExist:
-            return Response({"detail": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+        user = self.get_user(pk)
+        serializer = UserSerializer(user, data=request.data, partial=True)
 
-        serializer = UserSerializer(user, data=request.data)
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
+            try:
+                serializer.save()
+
+                # If email is updated, update the username as well
+                if 'email' in request.data:
+                    user.refresh_from_db()
+                    user.save(update_fields=['username'])
+
+                # Handle favorite profiles
+                favorite_profiles = request.data.get('favorite_profiles', [])
+
+                # Verify that the profile IDs exist
+                existing_profiles = Profile.objects.filter(id__in=favorite_profiles)
+                non_existing_profiles = set(favorite_profiles) - set(existing_profiles.values_list('id', flat=True))
+
+                if non_existing_profiles:
+                    return Response({"detail": f"Profiles with IDs {non_existing_profiles} do not exist."},
+                                    status=status.HTTP_400_BAD_REQUEST)
+
+                user.favorite_profiles.set(existing_profiles)
+
+                return Response(serializer.data)
+
+            except IntegrityError as e:
+                return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, pk, format=None):
-        # Delete user by primary key
-        try:
-            user = User.objects.get(pk=pk)
-        except User.DoesNotExist:
-            return Response({"detail": "User not found"}, status=status.HTTP_404_NOT_FOUND)
-
-        user.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
 
 class ProfileListCreateAPIView(APIView):
     """

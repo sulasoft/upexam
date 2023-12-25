@@ -2,14 +2,12 @@ from rest_framework import serializers
 from .models import User, Profile, FavoriteProfile
 
 class ProfileSerializer(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
-
     class Meta:
         model = Profile
-        fields = ['id', 'name', 'description', 'user']
+        fields = ['id', 'name', 'description']
 
 class FavoriteProfileSerializer(serializers.ModelSerializer):
-    profile = ProfileSerializer()
+    profile = ProfileSerializer(read_only=True)
 
     class Meta:
         model = FavoriteProfile
