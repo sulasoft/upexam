@@ -121,4 +121,8 @@ This is a Django REST Framework (DRF) API project that manages user profiles.
 ## Notes
 
 - The API documentation is available at the root path [http://localhost:8000/](http://localhost:8000/).
+
 - Use the provided requirements file for dependencies.
+
+- Use the provided requirements file for dependencies.
+
