@@ -1,35 +1,66 @@
-# Upwork - Entry Exam
+# UpExam Django API
 
-## Goal
-Working Django DRF API with a User and Profile models and schemas.
+This is a Django REST Framework (DRF) API project that manages user profiles.
 
-## Instructions
-1. Clone this repository (don't fork: you will be disqualified)
-2. Complete the tasks below adhering to the requirements
-3. Submit a pull request with your solution in your cloned repository (don't submit a PR here: you will be disqualified)
-4. Deliver a GitHub repository with your solution (it can be private, just give access to @arielaco)
+## Getting Started
 
-## Tasks
-- [ ] Create a [User](###User) and [Profile](###Profile) models and schemas 
-- [ ] Develop a REST API via DRF exposing CRUD endpoints for both models
-- [ ] Test at least 2 endpoints
-- [ ] Point DRF docs to root path
-- [ ] Create requirements file
-- [ ] Add a section on `README.md` with setup (venv), install (pip), run and testing instructions
+1. Clone this repository:
 
-### User
-- Email as username
-- Can have multiple profiles
-- Can have a list of favorite profiles
+git clone https://github.com/sulasoft/upexam.git
 
-### Profile
-- It has a name and a description
-- Belongs to a user
 
-## Requirements
-- Use English for all code, comments, commit messages, and documentation
-- Delete dead code (unrelated to tasks)
-- All API responses must be JSON
-- Implement proper folder structure
-- Validation must be done via serializers
-- Use multiple commits (when possible, use conventional commit messages)
+2. Navigate to the project directory:
+
+cd upexam
+
+
+3. Create a virtual environment and activate it:
+
+python -m venv venv
+source venv/bin/activate # On Windows: venv\Scripts\activate
+
+
+4. Install dependencies:
+
+pip install -r requirements.txt
+
+
+5. Create migrations:
+
+python manage.py makemigrations
+
+
+6. Apply migrations:
+
+python manage.py migrate
+
+
+7. Run the development server:
+
+python manage.py runserver
+
+
+7. Access the API documentation at [http://localhost:8000/](http://localhost:8000/).
+
+## API Endpoints
+
+- **User Endpoints:**
+- `GET /users/`: Retrieve a list of users.
+- `POST /users/`: Create a new user.
+- `GET /users/<int:pk>/`: Retrieve details of a specific user.
+- `PUT /users/<int:pk>/`: Update details of a specific user.
+- `DELETE /users/<int:pk>/`: Delete a specific user.
+
+- **Profile Endpoints:**
+- `GET /profiles/`: Retrieve a list of profiles.
+- `POST /profiles/`: Create a new profile.
+- `GET /profiles/<int:pk>/`: Retrieve details of a specific profile.
+- `PUT /profiles/<int:pk>/`: Update details of a specific profile.
+- `DELETE /profiles/<int:pk>/`: Delete a specific profile.
+
+
+## Notes
+
+- The API documentation is available at the root path [http://localhost:8000/](http://localhost:8000/).
+
+- Use the provided requirements file for dependencies.
